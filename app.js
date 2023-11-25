@@ -181,6 +181,10 @@ app.post("/login", (req, res) => {
   });
 });
 
-app.listen(3000, function () {
-  console.log("Server started on port 3000");
+// Port
+const PORT = process.env.PORT || 3000;
+
+// Run Listen
+app.listen(PORT, () => {
+  console.log(`Server is running on ${process.env.DEV_MODE} at PORT ${PORT}`);
 });
