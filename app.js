@@ -124,25 +124,30 @@ app.get("/submit", (req, res) => {
   if (req.isAuthenticated()) {
     res.render("submit");
   } else {
-    res.render("/login");
+    res.redirect("/login"); // Redirect to login instead of rendering login page
   }
 });
 
 app.post("/submit", async (req, res) => {
-  const submittedSecrets = req.body.secret;
-  const id = req.user.id;
+  if (req.isAuthenticated()) {
+    const submittedSecret = req.body.secret;
+    const userId = req.user._id;
 
-  console.log(id);
-
-  try {
-    const user = await User.findById(id);
-    if (user) {
-      user.secret = submittedSecrets;
-      await user.save();
-      res.redirect("/secrets");
+    try {
+      const user = await User.findById(userId);
+      if (user) {
+        user.secret = submittedSecret;
+        await user.save();
+        console.log("Secret saved:", submittedSecret);
+        return res.redirect("/secrets");
+      }
+    } catch (err) {
+      console.error("Error saving secret:", err);
+      // Redirect or render an error page here if the saving process fails
+      res.redirect("/submit");
     }
-  } catch (err) {
-    console.log(err);
+  } else {
+    res.redirect("/login");
   }
 });
 
